@@ -1,0 +1,276 @@
+<head>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+  />
+  <!-- Bootstrap -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+    crossorigin="anonymous"
+  />
+  <!-- JS, Popper.js, and jQuery -->
+  <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Lodash -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+  <!-- Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script src="menu.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <menu-bar></menu-bar>
+    <div class="d-flex d-md-none float-left pt-3 pl-3">
+      <h5 class="text-muted">{{ title }}</h5>
+    </div>
+
+    <div class="d-none d-md-flex mt-2 justify-content-center ">
+      <h3 class="text-muted">{{ title }}</h3>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="text-center text-muted mt-4">
+      <svg :viewBox="viewBox" :width="imageWidth" :height="imageHeight">
+        <circle
+          v-for="d in dots"
+          :cx="d.x"
+          :cy="d.y"
+          :r="d.r"
+          :fill="d.fill"
+        ></circle>
+      </svg>
+    </div>
+  </div>
+</body>
+
+<script>
+  /**
+   * Make an [n x n] array of 1|0 which has a symmetry along the diagonal
+   */
+  function makeRandomDiagonalTile (n) {
+    let result = []
+    let wasBlack
+    for (let y = 0; y < n; y += 1) {
+      let row = []
+      wasBlack = 0
+      for (let x = 0; x < n; x += 1) {
+        if (wasBlack > 2) {
+          row.push(1)
+          wasBlack = 0
+          continue
+        }
+        if (y === x || x === n || y === n || y < x) {
+          let col = Math.random() > 0.5 ? 1 : 0
+          row.push(col)
+          if (col === 0) {
+            wasBlack += 1
+          } else {
+            wasBlack = 0
+          }
+        } else if (y > x) {
+          row.push(result[x][y])
+        }
+      }
+      result.push(row)
+    }
+    return result
+  }
+
+  /**
+   * Reflects an [n x n] array to four quarters [2n x 2n] or [2n+1 x 2n+1] array
+   * with the reflection point in the bottom right hand corner
+   *
+   * @param tile - [n x n] array of 1|0
+   * @param isOdd - boolean - determines if reflection is
+   *                  on the last point or  around it
+   * @returns [2n+1 x 2n+1] if isOdd or [2n x 2n] if !isOdd
+   */
+  function reflectTile (tile, isOdd) {
+    let result = _.cloneDeep(tile)
+    const n = result.length
+    const nHalf = isOdd ? result.length : result.length - 1
+    for (let y = 0; y < n; y += 1) {
+      let row = result[y]
+      for (let x = nHalf - 1; x >= 0; x -= 1) {
+        row.push(row[x])
+      }
+    }
+    for (let y = nHalf - 1; y >= 0; y -= 1) {
+      result.push(result[y])
+    }
+    return result
+  }
+
+  /**
+   * Randomly changes dot pattern along diagonal symmetry
+   *
+   * @param tile - [n x n] array of 1|0
+   * @param nRandom - number of randomizations
+   * @returns [n x n] array of 1|0
+   */
+  function randomizeTile (tile, nRandom) {
+    let result = _.cloneDeep(tile)
+    const n = result.length - 1
+    for (let iRandom = 0; iRandom < nRandom; iRandom += 1) {
+      let i = _.random(n)
+      let j = _.random(n)
+      result[j][i] = result[j][i] ? 0 : 1
+      result[i][j] = result[j][i]
+    }
+    return result
+  }
+
+  const palette = {
+    blue: [
+      '#00429d',
+      '#2e59a8',
+      '#4771b2',
+      '#5d8abd',
+      '#73a2c6',
+      '#8abccf',
+      '#a5d5d8',
+      '#c5eddf'
+    ],
+    default: ['#E9DCCD', '#E3BAB3', '#613A43', '#849974', '#36384C']
+  }
+
+  function getRandomColor (paletteName) {
+    let colors = palette.default
+    if (paletteName in palette) {
+      colors = palette[paletteName]
+    }
+    return colors[_.random(colors.length - 1)]
+  }
+
+  new Vue({
+    el: '#app',
+    components: {
+      menuBar:
+        typeof menuBarComponent == 'undefined'
+          ? { template: '<div></div>' }
+          : menuBarComponent
+    },
+    data: {
+      imageWidth: 500,
+      imageHeight: 500,
+      viewBox: '0 0 500 500',
+      title: 'Dots',
+      dots: [],
+      savedTileByPos: {},
+      padding: 15,
+      fullTileSize: 100,
+      nTileCol: 0,
+      nTileRow: 0
+    },
+    mounted () {
+      window.document.title = `SVGArt::${this.title}`
+      this.resize()
+      this.reset()
+      setInterval(this.frame, 200)
+    },
+
+    created () {
+      window.addEventListener('resize', this.resize)
+    },
+    destroyed () {
+      window.removeEventListener('resize', this.resize)
+    },
+    methods: {
+      resize () {
+        let width = window.innerWidth - 10
+        this.nTileCol = Math.floor(width / this.fullTileSize)
+        this.imageWidth = this.nTileCol * this.fullTileSize - this.padding
+
+        let height = window.innerHeight - 120
+        this.nTileRow = Math.floor(height / this.fullTileSize)
+        this.imageHeight = this.nTileRow * this.fullTileSize - this.padding
+
+        this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
+      },
+
+      reset () {
+        this.savedTileByPos = {}
+        this.frame()
+      },
+
+      getTileAndColor (nTile, i, j) {
+        let quarterTile
+        let nDot
+        let color
+
+        const pos = String([i, j])
+        const choice = _.random(nTile)
+        if (!(pos in this.savedTileByPos) || choice === nTile) {
+          nDot = _.random(8, 20)
+          quarterTile = makeRandomDiagonalTile(Math.floor(nDot / 2))
+          color = getRandomColor('blue')
+        } else {
+          nDot = this.savedTileByPos[pos].nDot
+          quarterTile = this.savedTileByPos[pos].quarterTile
+          color = this.savedTileByPos[pos].color
+          if (choice > 0.85 * nTile) {
+            let nMax = Math.max(1, Math.round(nDot / 4))
+            quarterTile = randomizeTile(quarterTile, _.random(1, nMax))
+          }
+        }
+
+        this.savedTileByPos[pos] = { quarterTile, nDot, color }
+
+        const isOdd = nDot % 2 === 1
+        const tile = reflectTile(quarterTile, isOdd)
+
+        return { tile, color }
+      },
+
+      addDotsFromTile (tile, xOffset, yOffset, tileSize, fill) {
+        const n = tile.length
+        const d = tileSize / n
+        const r = d / 2
+        for (let i = 0; i < n; i += 1) {
+          for (let j = 0; j < n; j += 1) {
+            let x = xOffset + i * d + r
+            let y = yOffset + j * d + r
+            if (tile[j][i]) {
+              this.dots.push({ x, y, r, fill })
+            }
+          }
+        }
+      },
+      frame () {
+        this.dots = []
+        const tileSize = this.fullTileSize - this.padding
+        const nTile = this.nTileCol * this.nTileRow
+        for (let i = 0; i < this.nTileCol; i += 1) {
+          for (let j = 0; j < this.nTileRow; j += 1) {
+            const { tile, color } = this.getTileAndColor(nTile, i, j)
+            this.addDotsFromTile(
+              tile,
+              i * this.fullTileSize,
+              j * this.fullTileSize,
+              tileSize,
+              color
+            )
+          }
+        }
+      }
+    }
+  })
+</script>

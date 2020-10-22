@@ -1,0 +1,205 @@
+<head>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+  />
+  <!-- Bootstrap -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Lodash -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+  <!-- Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script src="menu.js"></script>
+  <script src="sprite.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <menu-bar></menu-bar>
+
+    <div class="d-flex d-md-none float-left pt-3 pl-3">
+      <h5 class="text-muted">{{ title }}</h5>
+    </div>
+
+    <div class="d-none d-md-flex mt-2 justify-content-center ">
+      <h3 class="text-muted">{{ title }}</h3>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="text-center text-muted">
+      <div id="walk" style="width: 100%;"></div>
+    </div>
+  </div>
+
+  <script>
+    function lerp (a, b, f) {
+      return a + f * (b - a)
+    }
+
+    class WalkingWidget extends CanvasWidget {
+      constructor (selector) {
+        super(selector)
+
+        this.sprites = []
+
+        let onLoad = () => {
+          this.resize()
+        }
+
+        this.sprites.push(
+          new Sprite({
+            relX: 0,
+            relY: 0,
+            absScale: 1,
+            url: './sheep/scene.jpg',
+            onLoad
+          })
+        )
+        this.background = this.sprites[0]
+
+        // http://finalbossblues.com/wp-content/uploads/2013/12/walk8.gif
+        let src = './sheep/walk8.gif'
+        let d = [6, 8, 5, 2, 8, 20, 18, -8]
+        let frames = _.map(_.range(8), i => {
+          return {
+            x: i * 71,
+            y: 0,
+            w: 71,
+            h: 91,
+            r: 0,
+            diffX: d[i],
+            diffY: 0
+          }
+        })
+        this.man = new Sprite({
+          relX: 0,
+          relY: 0.48,
+          absScale: 0.12,
+          url: src,
+          frames: _.clone(frames),
+          nCounterPerFrame: 8,
+          isBorderBox: false,
+          onLoad
+        })
+        this.sprites.push(this.man)
+
+        let src2 = './sheep/sheep_walk.png'
+        let d2 = [2, 2, 2, 2]
+        let frames2 = _.map(_.range(4), i => {
+          return {
+            x: i * 128,
+            y: 3 * 128,
+            w: 128,
+            h: 128,
+            r: 0,
+            diffX: d2[i],
+            diffY: 0
+          }
+        })
+        this.sheepList = []
+        _.times(50, () => {
+          let sheep = new Sprite()
+          sheep.asyncLoadSrc(src2).then(() => {
+            sheep.frames = _.clone(frames2)
+            sheep.isBorderBox = false
+          })
+          this.sprites.push(sheep)
+          this.sheepList.push(sheep)
+        })
+      }
+
+      resize () {
+        let scale = this.background.image.height / this.background.image.width
+        this.div.height(this.width() * scale)
+        super.resize()
+
+        for (let sprite of this.sprites) {
+          sprite.parentWidth = this.width()
+          sprite.parentHeight = this.height()
+        }
+
+        this.man.scale =
+          (this.man.parentHeight / this.man.image.height) * this.man.absScale
+
+        this.background.scale = this.width() / this.background.image.width
+
+        let n = this.sheepList.length
+        let rList = []
+        _.times(n, () => rList.push(_.random(0, 1, true)))
+        rList.sort()
+
+        for (let i of _.range(n)) {
+          let sheep = this.sheepList[i]
+          let r = rList[i]
+          sheep.relX = _.random(-0.03, 1)
+          sheep.nCounterPerFrame = _.random(3, 10)
+          sheep.scale = (lerp(0.3, 0.72, r) * this.height()) / 128
+          sheep.relY = lerp(0.44, 0.53, r)
+        }
+      }
+
+      draw () {
+        for (let sprite of this.sprites) {
+          sprite.render(this.drawContext)
+        }
+        this.isChanged = false
+      }
+
+      animate () {
+        for (let sprite of this.sprites) {
+          if (sprite.frames.length > 0) {
+            sprite.updateFrame()
+          }
+        }
+        this.isChanged = true
+      }
+    }
+
+    new Vue({
+      el: '#app',
+      components: {
+        menuBar:
+          typeof menuBarComponent == 'undefined'
+            ? { template: '<div></div>' }
+            : menuBarComponent
+      },
+      data () {
+        return {
+          title: 'Sheep'
+        }
+      },
+      async mounted () {
+        window.document.title = `SVGArt::${this.title}`
+        this.widget = {}
+        this.widget.walking = new WalkingWidget('#walk')
+        window.onresize = () => {
+          for (let w of _.values(this.widget)) {
+            w.resize()
+          }
+        }
+      }
+    })
+  </script>
+</body>

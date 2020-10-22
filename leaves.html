@@ -1,0 +1,190 @@
+<head>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+  />
+  <!-- Bootstrap -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Lodash -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+  <!-- Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script src="menu.js"></script>
+  <script src="sprite.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <menu-bar></menu-bar>
+    <div class="d-flex d-md-none float-left pt-3 pl-3">
+      <h5 class="text-muted">{{ title }}</h5>
+    </div>
+
+    <div class="d-none d-md-flex mt-2 justify-content-center ">
+      <h5 class="text-muted">{{ title }}</h5>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="text-center text-muted">
+      <div id="leaves" style="width: 100%;"></div>
+    </div>
+  </div>
+
+  <script>
+    function sinFn (t, period, amplitude) {
+      return Math.sin((t * 2) / Math.PI / period + Math.PI / 2) * amplitude
+    }
+
+    function lerp (a, b, f) {
+      return a + f * (b - a)
+    }
+
+    function makeRandomAnimateFn () {
+      let f = _.random(0, 1, true)
+      let period = lerp(10, 400, f)
+      let amplitude = lerp(0.001, 0.01, f)
+      return t => sinFn(t + _.random(), period, amplitude)
+    }
+
+    class LeavesWidget extends CanvasWidget {
+      constructor (selector) {
+        super(selector)
+
+        this.timeElapsed = 0
+
+        this.sprites = []
+
+        let spriteConfigs = [
+          {
+            url: './leaves/scene2.jpg',
+            relX: 0,
+            relY: 0,
+            absScale: 1,
+            onLoad: () => {
+              this.resize()
+            }
+          },
+          {
+            url: './leaves/leaves.png',
+            relX: -0.1,
+            relY: -0.1,
+            anchor: {
+              relX: 0.2,
+              relY: 0.8
+            },
+            absScale: 0.6,
+            animateFn: timeElapsed => sinFn(timeElapsed, 200, 1.1),
+            animateVar: 'angle',
+            onLoad: () => {
+              this.resize()
+            }
+          }
+        ]
+
+        for (let i = 0; i < 25; i += 1) {
+          spriteConfigs.push({
+            url: './leaves/grass.png',
+            relX: _.random(-0.2, 0.85),
+            relY: 0.65,
+            absScale: 0.3,
+            animateFn: makeRandomAnimateFn(),
+            animateVar: 'dRelX',
+            onLoad: () => {
+              this.resize()
+            }
+          })
+        }
+
+        for (let spriteConfig of spriteConfigs) {
+          this.sprites.push(new Sprite(spriteConfig))
+        }
+
+        this.background = this.sprites[0]
+
+        this.resize()
+      }
+
+      resize () {
+        let r = this.background.image.height / this.background.image.width
+
+        this.div.height(this.width() * r)
+
+        super.resize()
+
+        for (let sprite of this.sprites) {
+          sprite.parentWidth = this.width()
+          sprite.parentHeight = this.height()
+          sprite.scale =
+            (sprite.parentWidth / sprite.image.width) * sprite.absScale
+          sprite.anchor.x = sprite.anchor.relX * sprite.parentWidth
+          sprite.anchor.y = sprite.anchor.relY * sprite.parentHeight
+          this.isChanged = true
+        }
+        this.draw()
+      }
+
+      draw () {
+        for (let sprite of this.sprites) {
+          sprite.render(this.drawContext)
+        }
+        this.isChanged = false
+      }
+
+      animate (timeElapsed) {
+        this.timeElapsed += timeElapsed
+        for (let sprite of this.sprites) {
+          sprite.animate(this.timeElapsed)
+        }
+        this.isChanged = true
+      }
+    }
+
+    new Vue({
+      el: '#app',
+      components: {
+        vueSlider: window['vue-slider-component'],
+        menuBar:
+          typeof menuBarComponent == 'undefined'
+            ? { template: '<div></div>' }
+            : menuBarComponent
+      },
+      data () {
+        return {
+          title: 'Leaves',
+        }
+      },
+      async mounted () {
+        window.document.title = `SVGArt::${this.title}`
+        this.widget = {}
+        this.widget.walking = new LeavesWidget('#leaves')
+        window.onresize = () => {
+          for (let w of _.values(this.widget)) {
+            w.resize()
+          }
+        }
+      }
+    })
+  </script>
+</body>

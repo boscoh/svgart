@@ -1,0 +1,327 @@
+<head>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+  />
+  <!-- Bootstrap -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Lodash -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.min.js"></script>
+  <!-- Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- VueSlider -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/theme/antd.css"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/dist/vue-slider-component.umd.min.js"></script>
+
+  <script src="menu.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <menu-bar></menu-bar>
+    <div class="d-flex d-md-none float-left pt-3 pl-3">
+      <h5 class="text-muted">{{ title }}</h5>
+    </div>
+
+    <div class="d-none d-md-flex mt-2 justify-content-center ">
+      <h3 class="text-muted">{{ title }}</h3>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="text-center text-muted">
+      <svg
+        ref="svg"
+        :viewBox="viewBox"
+        :width="imageWidth"
+        :height="imageHeight"
+        @mousemove="mousemove($event)"
+      >
+        <g v-for="s in squares" :transform="s.transform">
+          <path
+            :opacity="s.opacity"
+            :d="s.d"
+            :stroke="s.stroke"
+            :stroke-width="s.strokeWidth"
+            :fill="s.fill"
+          ></path>
+        </g>
+      </svg>
+
+      <div
+        class="mt-3 row align-items-center small px-2"
+        style="margin: 0 auto; max-width: 480px"
+      >
+        <div>amplitude</div>
+        <div class="col">
+          <vue-slider
+            tooltip="none"
+            v-model="e"
+            :min="1"
+            :max="maxE"
+          ></vue-slider>
+        </div>
+        <div class="col">
+          <vue-slider
+            tooltip="none"
+            v-model="density"
+            :min="1"
+            :max="maxDensity"
+          ></vue-slider>
+        </div>
+        <div>density</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * @param xOffset - positional offset to draw square
+     * @param yOffset - positional offset to draw square
+     * @param size - size of the square on viewport
+     * @returns {}
+     */
+    function makeSquare (xOffset, yOffset, size, color) {
+      let square = {
+        xTL: xOffset,
+        yTL: yOffset,
+        xTR: xOffset + size,
+        yTR: yOffset,
+        xBR: xOffset + size,
+        yBR: yOffset + size,
+        xBL: xOffset,
+        yBL: yOffset + size,
+        xRot: xOffset + size / 2,
+        yRot: yOffset + size / 2,
+        stroke: `#333`,
+        strokeWidth: 2,
+        opacity: 1,
+        fill: color,
+        transform: ''
+      }
+      square.d =
+        `` +
+        `M ${square.xTL} ${square.yTL} ` +
+        `L ${square.xTR} ${square.yTR} ` +
+        `L ${square.xBR} ${square.yBR} ` +
+        `L ${square.xBL} ${square.yBL}Z`
+      return square
+    }
+
+    function makeSpring (xOffset, yOffset, period) {
+      let spring = {
+        x: xOffset,
+        y: yOffset,
+        r: 0,
+        v: 0,
+        phi: 2 * Math.PI * Math.random(),
+        spring: (4 * Math.PI * Math.PI) / period / period,
+        damp: 0.5
+      }
+      return spring
+    }
+
+    const colors = ['#044BD9', '#0583F2', '#05AFF2', '#05DBF2', '#fa7f70']
+    function getRandomColor () {
+      return colors[_.random(colors.length - 1)]
+    }
+
+    function interpolateColor (color1, color2, r) {
+      const color = []
+      for (let j = 0; j < 3; j += 1) {
+        let c1 = color1[j]
+        let c2 = color2[j]
+        color.push(c1 + (c2 - c1) * r)
+      }
+      return color
+    }
+
+    new Vue({
+      el: '#app',
+      components: {
+        vueSlider: window['vue-slider-component'],
+        menuBar:
+          typeof menuBarComponent == 'undefined'
+            ? { template: '<div></div>' }
+            : menuBarComponent
+      },
+      data: {
+        imageWidth: 500,
+        imageHeight: 500,
+        viewBox: '0 0 500 500',
+        title: 'Quads',
+        squares: [],
+        squareByCoord: {},
+        springByCoord: {},
+        padding: 10,
+        fullTileSize: 25,
+        nTileCol: 0,
+        nTileRow: 0,
+        dt: 0.1,
+        e: 300,
+        maxE: 1000,
+        density: 750,
+        maxDensity: 1000
+      },
+      mounted () {
+        window.document.title = `SVGArt::${this.title}`
+        this.resize()
+        this.reset()
+        setInterval(this.frame, 100)
+        window.addEventListener('resize', this.resize)
+      },
+      methods: {
+        resize () {
+          let width = window.innerWidth - 40
+          this.nTileCol = Math.floor(width / this.fullTileSize)
+          this.imageWidth = this.nTileCol * this.fullTileSize + 2 * this.padding
+
+          let height = window.innerHeight - 170
+          this.nTileRow = Math.floor(height / this.fullTileSize)
+          this.imageHeight =
+            this.nTileRow * this.fullTileSize + 2 * this.padding
+
+          this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
+
+          this.reset()
+        },
+
+        reset () {
+          const minPeriod = this.dt * 10
+          this.squares = []
+          this.springByCoord = {}
+          this.squareByCoord = {}
+          for (let i = 0; i < this.nTileCol; i += 1) {
+            for (let j = 0; j < this.nTileRow; j += 1) {
+              const key = String([i, j])
+              this.squareByCoord[key] = makeSquare(
+                i * this.fullTileSize + this.padding,
+                j * this.fullTileSize + this.padding,
+                this.fullTileSize,
+                getRandomColor()
+              )
+              this.squares.push(this.squareByCoord[key])
+            }
+          }
+          for (let i = 1; i < this.nTileCol; i += 1) {
+            for (let j = 1; j < this.nTileRow; j += 1) {
+              const key = String([i, j])
+              this.springByCoord[key] = makeSpring(
+                i * this.fullTileSize + this.padding,
+                j * this.fullTileSize + this.padding,
+                minPeriod * _.random(1, 4, true)
+              )
+            }
+          }
+          this.frame()
+        },
+
+        updateTransform (square) {
+          square.d =
+            `` +
+            `M ${square.xTL} ${square.yTL} ` +
+            `L ${square.xTR} ${square.yTR} ` +
+            `L ${square.xBR} ${square.yBR} ` +
+            `L ${square.xBL} ${square.yBL}Z`
+        },
+
+        energy (spring) {
+          return spring.v * spring.v + spring.spring * spring.r * spring.r
+        },
+
+        resetEnergy (spring) {
+          let targetE = this.e * _.random(0.9, 1, true)
+          spring.v = _.sample([-1, 1]) * Math.sqrt(2 * targetE)
+        },
+
+        changeSquare (i, j, corner, diffX, diffY) {
+          const key = String([i, j])
+          if (!(key in this.squareByCoord)) {
+            return
+          }
+          let square = this.squareByCoord[key]
+          square[`x${corner}`] = diffX
+          square[`y${corner}`] = diffY
+        },
+
+        frame () {
+          for (let i = 0; i < this.nTileCol; i += 1) {
+            for (let j = 0; j < this.nTileRow; j += 1) {
+              const key = String([i, j])
+              if (!(key in this.springByCoord)) {
+                continue
+              }
+              let spring = this.springByCoord[key]
+
+              const lowE = 0.3 * this.e
+              const p = 1 / (this.maxDensity - this.density + 1)
+              if (this.energy(spring) < lowE && Math.random() < p) {
+                this.resetEnergy(spring)
+              }
+
+              spring.r += spring.v * this.dt
+              spring.v +=
+                this.dt * (-spring.spring * spring.r - spring.damp * spring.v)
+
+              let x = spring.x + spring.r * Math.cos(spring.phi)
+              let y = spring.y + spring.r * Math.sin(spring.phi)
+
+              this.changeSquare(i - 1, j - 1, 'BR', x, y)
+              this.changeSquare(i, j - 1, 'BL', x, y)
+              this.changeSquare(i, j, 'TL', x, y)
+              this.changeSquare(i - 1, j, 'TR', x, y)
+            }
+          }
+          for (let i = 0; i < this.nTileCol; i += 1) {
+            for (let j = 0; j < this.nTileRow; j += 1) {
+              const key = String([i, j])
+              let square = this.squareByCoord[key]
+              this.updateTransform(square)
+            }
+          }
+        },
+
+        mousemove (event) {
+          const el = this.$refs.svg
+          var rect = el.getBoundingClientRect()
+
+          let x = event.pageX - rect.left
+          let i = Math.floor((x - this.padding) / this.fullTileSize)
+
+          let y = event.pageY - rect.top
+          let j = Math.floor((y - this.padding) / this.fullTileSize)
+
+          const key = String([i, j])
+          if (!(key in this.springByCoord)) {
+            return
+          }
+
+          this.resetEnergy(this.springByCoord[key])
+        }
+      }
+    })
+  </script>
+</body>

@@ -1,0 +1,255 @@
+<head>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+  />
+  <!-- Bootstrap -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Lodash -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+  <!-- Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- VueSlider -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/theme/antd.css"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/dist/vue-slider-component.umd.min.js"></script>
+
+  <script src="menu.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <menu-bar></menu-bar>
+
+    <div class="d-flex d-md-none float-left pt-3 pl-3">
+      <h5 class="text-muted">{{ title }}</h5>
+    </div>
+
+    <div class="d-none d-md-flex mt-2 justify-content-center ">
+      <h3 class="text-muted">{{ title }}</h3>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="text-center text-muted">
+      <div v-for="(value, key) of params">
+        <span class="badge badge-secondary">{{key}}</span>
+        {{ value }}
+      </div>
+
+      <svg :viewBox="viewBox" :width="imageWidth" :height="imageHeight">
+        <circle
+          v-for="c in circles"
+          :cx="c.cx"
+          :cy="c.cy"
+          :r="c.r"
+          :fill="c.fill"
+          :stroke-width="c.strokeWidth"
+        ></circle>
+      </svg>
+
+      <div class="mt-4 small">
+        dots {{ dotPercent }}% &nbsp; area {{ areaPercent }}%
+      </div>
+
+      <div
+        class="row align-items-center small px-2"
+        style="margin: 0 auto; max-width: 480px"
+      >
+        <div>rMin</div>
+        <div class="col">
+          <vue-slider
+            v-model="rhoMin"
+            :min="0.001"
+            :max="0.050"
+            :interval="0.001"
+          ></vue-slider>
+        </div>
+        <div>rMax</div>
+        <div class="col">
+          <vue-slider
+            v-model="rhoMax"
+            :min="0.01"
+            :max="0.50"
+            :interval="0.01"
+          ></vue-slider>
+        </div>
+        <div>stretch</div>
+        <div class="col">
+          <vue-slider v-model="stretch" :min="1" :max="300"></vue-slider>
+        </div>
+      </div>
+
+      <div class="">
+        <button class="text-secondary btn btn-light" v-on:click="reset">
+          Reset
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  const bluePalette = [
+    '#00429d',
+    '#2e59a8',
+    '#4771b2',
+    '#5d8abd',
+    '#73a2c6',
+    '#8abccf',
+    '#a5d5d8',
+    '#c5eddf'
+  ]
+  const colors = ['#E9DCCD', '#E3BAB3', '#613A43', '#849974', '#36384C']
+
+  function getRandomColor () {
+    return colors[_.random(colors.length - 1)]
+  }
+
+  function isClash (c1, c2) {
+    let x = c1.cx - c2.cx
+    let y = c1.cy - c2.cy
+    let d = Math.sqrt(x * x + y * y)
+    return d < c1.r + c2.r
+  }
+
+  new Vue({
+    el: '#app',
+    components: {
+      vueSlider: window['vue-slider-component'],
+      menuBar:
+        typeof menuBarComponent == 'undefined'
+          ? { template: '<div></div>' }
+          : menuBarComponent
+    },
+    data: {
+      imageWidth: 500,
+      imageHeight: 500,
+      viewBox: '0 0 500 500',
+      title: 'Round',
+      circles: [],
+      cx: 0,
+      cy: 0,
+      r: 0,
+      rhoMin: 0.02,
+      rhoMax: 0.2,
+      stretch: 100,
+      nTotal: 5000,
+      area: 0,
+      nSkip: 0
+    },
+    mounted () {
+      window.document.title = `SVGArt::${this.title}`
+      this.resize()
+      this.reset()
+      setInterval(this.frame, 20)
+    },
+    created () {
+      window.addEventListener('resize', this.resize)
+    },
+    destroyed () {
+      window.removeEventListener('resize', this.resize)
+    },
+    computed: {
+      dotPercent () {
+        return (
+          ((this.circles.length + this.nSkip) / this.nTotal) *
+          100
+        ).toFixed(0)
+      },
+      areaPercent () {
+        return this.area.toFixed(0)
+      }
+    },
+    methods: {
+      resize () {
+        let imageWidthNew = window.innerWidth - 10
+        let imageHeightNew = window.innerHeight - 215
+        let rBigNew = Math.min(imageWidthNew, imageHeightNew) / 2
+        let cxNew = imageWidthNew / 2
+        let cyNew = imageHeightNew / 2
+        let ratio = rBigNew / this.r
+        for (let circle of this.circles) {
+          circle.cx = ratio * (circle.cx - this.cx) + cxNew
+          circle.cy = ratio * (circle.cy - this.cy) + cyNew
+          circle.r = ratio * circle.r
+        }
+        this.r = rBigNew
+        this.cx = cxNew
+        this.cy = cyNew
+        this.imageWidth = imageWidthNew
+        this.imageHeight = imageHeightNew
+        this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
+      },
+      reset () {
+        const prob = () =>
+          Math.exp(_.random(true) * this.stretch) / Math.exp(this.stretch)
+        const rhoDelta = this.rhoMax - this.rhoMin
+        const rhoFn = () => this.rhoMin + rhoDelta * prob()
+        this.rhoList = _.sortBy(_.times(this.nTotal, rhoFn))
+        this.circles = []
+        this.area = 0
+      },
+      frame () {
+        const fill = getRandomColor()
+        const r = this.rhoList.pop() * this.r
+
+        let guard = 500
+        while (guard > 0) {
+          let rPolar = this.r * Math.random()
+          let phi = 2 * Math.PI * Math.random()
+          let cx = rPolar * Math.cos(phi) + this.cx
+          let cy = rPolar * Math.sin(phi) + this.cy
+          let circle = { cx, cy, r, fill }
+
+          let isGood = true
+          if (rPolar + r > this.r) {
+            isGood = false
+          } else {
+            let iLast = this.circles.length - 1
+            for (let i = iLast; i >= 0; i -= 1) {
+              if (isClash(this.circles[i], circle)) {
+                isGood = false
+                break
+              }
+            }
+          }
+
+          if (isGood) {
+            this.circles.push(circle)
+            let rho = circle.r / this.r
+            this.area += rho * rho * 90
+            return
+          }
+
+          guard -= 1
+          if (guard <= 0) {
+            this.nSkip += 1
+          }
+        }
+      }
+    }
+  })
+</script>
