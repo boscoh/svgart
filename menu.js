@@ -5,6 +5,7 @@ const menuItems = [
   { name: 'Round', html: 'round.html' },
   { name: 'Arcs', html: 'arcs.html' },
   { name: 'Fractals', html: 'fractals.html' },
+  { name: 'FractalEditor', html: 'fractaleditor.html' },
   { name: 'Dots', html: 'dots.html' },
   { name: 'Sheep', html: 'sheep.html' },
   { name: 'Leaves', html: 'leaves.html' }
@@ -14,7 +15,7 @@ const menuBarComponent = {
   template: `
     <div>
 
-      <div class="d-none d-md-flex justify-content-center p-2">
+      <div class="d-none d-lg-flex justify-content-center p-2">
         <a
           v-for="m in menuItems"
           class="text-secondary btn btn-light ml-2"
@@ -24,7 +25,7 @@ const menuBarComponent = {
         </a>
       </div>
 
-      <div class="d-flex d-md-none float-right p-2">
+      <div class="d-flex d-lg-none float-right p-2">
         <button class="text-secondary btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           =
         </button>
