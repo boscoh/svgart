@@ -30,6 +30,9 @@
     <!-- Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
+    <!-- font awesome icons -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
     <script src="menu.js"></script>
 
     <style>
@@ -103,19 +106,15 @@
                                 >
                             </button>
 
-                            <div class="mr-3 custom-control custom-switch">
-                                <input
-                                    type="checkbox"
-                                    class="custom-control-input"
-                                    id="customSwitch1"
-                                    v-model="play"
-                                />
-                                <label
-                                    class="custom-control-label"
-                                    for="customSwitch1"
-                                    >Play</label
-                                >
-                            </div>
+                            <span class="glyphicon glyphicon-play"></span>
+                            <button
+                                    class="btn btn-light mr-2"
+                                    v-on:click="clickPlay"
+                            >
+                                <i v-if="!play" class="fa fa-play"></i>
+                                <i v-if="play" class="fa fa-pause"></i>
+                            </button>
+
                         </div>
 
                         <label class="mt-2 small">Axiom</label>
@@ -482,6 +481,9 @@
                 this.imageHeight = imageHeight
 
                 this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
+            },
+            clickPlay() {
+              this.play = !this.play
             },
             clickFractal (name) {
                 this.play = false
