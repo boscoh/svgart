@@ -67,7 +67,7 @@
         </button>
         <div class="dropdown-menu">
           <button
-            v-for="c in choices"
+            v-for="c in names"
             class="text-secondary dropdown-item"
             v-on:click="clickFractal(c)"
           >
@@ -117,157 +117,139 @@
 </body>
 
 <script>
-  const fractals = {
-    'Sierpinsky Triangle': {
+  const fractalList = [
+    {
+      name: 'Sierpinsky Triangle',
       axiom: 'AF',
-      rules: {
-        A: 'BF-AF-B',
-        B: 'AF+BF+A'
-      },
+      rules: { A: 'BF-AF-B', B: 'AF+BF+A' },
       angle: 60,
       flipStartAngleOnOddOrder: true,
       startAngle: 180,
-      maxOrder: 8
+      maxOrder: 8,
     },
-    'Sierpinsky Carpet': {
+    {
+      name: 'Sierpinsky Carpet',
       axiom: 'F',
-      rules: {
-        F: '<F+F-F-F-G+F+F+F-F',
-        G: 'GGG'
-      },
+      rules: { F: '<F+F-F-F-G+F+F+F-F', G: 'GGG' },
       angle: 90,
-      maxOrder: 4
+      maxOrder: 4,
     },
-    'Sierpinsky Square': {
+    {
+      name: 'Sierpinsky Square',
       axiom: 'X--F--X--F',
-      rules: {
-        X: '+Y-F-Y+',
-        Y: '-X+F+X-'
-      },
+      rules: { X: '+Y-F-Y+', Y: '-X+F+X-' },
       angle: 45,
-      maxOrder: 13
+      maxOrder: 13,
     },
-    'Shrub 1': {
+    {
+      name: 'Shrub 1',
       axiom: 'X',
-      rules: {
-        X: 'F[>8+X][>8-X]FX',
-        F: 'FF'
-      },
+      rules: { X: 'F[>8+X][>8-X]FX', F: 'FF' },
       angle: 14,
       startAngle: 270,
-      maxOrder: 8
+      maxOrder: 8,
     },
-    'Shrub 2': {
+    {
+      name: 'Shrub 2',
       axiom: 'X',
-      rules: {
-        X: 'F-[[>6X]+X]+F[>6+FX]',
-        F: 'FF'
-      },
+      rules: { X: 'F-[[>6X]+X]+F[>6+FX]', F: 'FF' },
       angle: 16,
       startAngle: 260,
-      maxOrder: 8
+      maxOrder: 8,
     },
-    'Shrub 3': {
+    {
+      name: 'Shrub 3',
       axiom: 'F',
-      rules: {
-        F: 'F[>5+F]F[>5-F][>>F]'
-      },
+      rules: { F: 'F[>5+F]F[>5-F][>>F]' },
       angle: 18,
       startAngle: 270,
-      maxOrder: 5
+      maxOrder: 5,
     },
-    'Shrub 4': {
+    {
+      name: 'Shrub 4',
       axiom: '---X',
-      rules: {
-        X: 'F[-X][X]F[-X]+FX',
-        F: 'FF'
-      },
+      rules: { X: 'F[-X][X]F[-X]+FX', F: 'FF' },
       angle: 25,
       startAngle: 0,
-      maxOrder: 6
+      maxOrder: 6,
     },
-    'Shrub 5': {
+    {
+      name: 'Shrub 5',
       axiom: '+++FX',
-      rules: {
-        X: '@[>4-FY]+FX',
-        Y: 'FX+FY-FX'
-      },
+      rules: { X: '@[>4-FY]+FX', Y: 'FX+FY-FX' },
       angle: 20,
       startAngle: 185,
-      maxOrder: 10
+      maxOrder: 10,
     },
-    'Y Tree': {
+    {
+      name: 'Y Tree',
       axiom: 'FX',
-      rules: {
-        X: '@[+FX][-FX]'
-      },
+      rules: { X: '@[+FX][-FX]' },
       angle: 45,
       startAngle: 270,
-      maxOrder: 10
+      maxOrder: 10,
     },
-    'Moore fractal': {
+    {
+      name: 'Moore fractal',
       axiom: 'X',
       rules: {
         X: '<5FX+FX+FXFYFX+FXFY-FY-FY-',
         Y: '5+FX+FX+FXFY-FYFXFY-FY-FY',
-        F: ''
+        F: '',
       },
       angle: 90,
       flipStartAngleOnOddOrder: true,
-      maxOrder: 4
+      maxOrder: 4,
     },
-    Rings: {
+    {
+      name: 'Rings',
       axiom: 'F-F-F-F',
-      rules: {
-        F: 'FF-F-F-F-F-F+F'
-      },
+      rules: { F: 'FF-F-F-F-F-F+F' },
       angle: 90,
-      maxOrder: 4
+      maxOrder: 4,
     },
-    'Penrose Tile': {
+    {
+      name: 'Penrose Tile',
       axiom: '[N]++[N]++[N]++[N]++[N]',
       rules: {
         M: 'OF++PF----NF[-OF----MF]++',
         N: '+OF--PF[---MF--NF]+',
         O: '-MF++NF[+++OF++PF]-',
         P: '--OF++++MF[+PF++++NF]--NF',
-        F: ''
+        F: '',
       },
       angle: 36,
-      maxOrder: 6
+      maxOrder: 6,
     },
-    'Gosper Curve': {
+    {
+      name: 'Gosper Curve',
       axiom: 'XF',
-      rules: {
-        X: 'X+YF++YF-FX--FXFX-YF+',
-        Y: '-FX+YFYF++YF+FX--FX-Y'
-      },
+      rules: { X: 'X+YF++YF-FX--FXFX-YF+', Y: '-FX+YFYF++YF+FX--FX-Y' },
       angle: 60,
-      maxOrder: 5
+      maxOrder: 5,
     },
-    'Hilbert Curve': {
+    {
+      name: 'Hilbert Curve',
       axiom: 'X',
-      rules: {
-        X: '-YF+XFX+FY-',
-        Y: '+XF-YFY-FX+'
-      },
+      rules: { X: '-YF+XFX+FY-', Y: '+XF-YFY-FX+' },
       angle: 90,
-      maxOrder: 7
+      maxOrder: 7,
     },
-    'Koch Curve': {
+    {
+      name: 'Koch Curve',
       axiom: 'F+F+F+F',
       rules: { F: 'F+F-F-FF+F+F-F' },
       angle: 90,
-      maxOrder: 3
+      maxOrder: 3,
     },
-    'Koch Snowflake': {
+    {
       name: 'Koch',
       axiom: 'F++F++F',
       rules: { F: 'F-F++F-F' },
       angle: 60,
-      maxOrder: 5
-    }
-  }
+      maxOrder: 5,
+    },
+  ]
 
   function replace (sourceS, replacement) {
     let result = ''
@@ -296,19 +278,18 @@
       lines: [],
       order: 1,
       maxOrder: 1,
-      choices: [],
-      choice: '',
+      names: [],
+      name: '',
       play: true
     },
     mounted () {
       window.document.title = `SVGArt::${this.title}`
       setInterval(this.frame, 1500)
-      this.choices = Object.keys(fractals)
-      this.choice = this.choices[0]
+      this.names = _.map(fractalList, 'name')
+      this.name = this.names[0]
       if (this.play) {
-        this.choice = _.sample(this.choices)
+        this.name = _.sample(this.names)
       }
-      this.maxOrder = fractals[this.choice].maxOrder
       this.order = 1
       this.resize()
       this.chooseNewFractal()
@@ -381,11 +362,12 @@
         this.play = false
         this.chooseNewFractal(choice)
       },
-      chooseNewFractal (choice) {
-        if (choice) {
-          this.choice = choice
+      chooseNewFractal (name) {
+        if (name) {
+          this.name = name
         }
-        this.maxOrder = fractals[this.choice].maxOrder
+        this.fractal = _.find(fractalList, {name: this.name})
+        this.maxOrder = this.fractal.maxOrder
         if (this.order > this.maxOrder) {
           this.order = this.maxOrder
         }
@@ -406,11 +388,11 @@
         this.redraw()
       },
       redraw () {
-        console.log(this.choice, this.order)
+        console.log(this.name, this.order)
 
-        this.title = `Fractal :: ${this.choice}`
+        this.title = `Fractal :: ${this.name}`
 
-        let fractal = fractals[this.choice]
+        let fractal = this.fractal
 
         let s = fractal.axiom
         for (let i in _.range(this.order)) {
@@ -478,7 +460,7 @@
           return
         }
         this.order = 1
-        this.chooseNewFractal(_.sample(this.choices))
+        this.chooseNewFractal(_.sample(this.names))
       }
     }
   })

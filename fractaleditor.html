@@ -1,0 +1,619 @@
+<head>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <!-- Bootstrap -->
+    <link
+        rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+        crossorigin="anonymous"
+    />
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"
+    ></script>
+    <!-- Lodash -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="menu.js"></script>
+
+    <style>
+        button {
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <menu-bar></menu-bar>
+
+        <div class="clearfix mb-2"></div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div
+                    class="col-4 card ml-3 p-3 p4-4"
+                    ref="panel"
+                    style="height: calc(100vh - 80px); overflow: auto"
+                >
+                    <div>
+                        <h5 class="text-muted mb-n1">FractalEditor</h5>
+
+                        <div class="mb-2 form-inline justify-content-start">
+                            <h2 class="mr-3 text-uppercase" style="line-height: 1em">{{ name }}</h2>
+                            <button
+                                class="text-secondary mt-n2 btn btn-sm btn-light dropdown-toggle mr-2"
+                                type="button"
+                                id="dropdownMenuButton"
+                                data-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                More
+                            </button>
+                            <div class="dropdown-menu">
+                                <button
+                                    v-for="c in names"
+                                    class="text-secondary dropdown-item"
+                                    v-on:click="clickFractal(c)"
+                                >
+                                    {{c}}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-2 form-inline justify-content-start">
+                            <div class="mr-2">
+                                Order
+                            </div>
+
+                            <button
+                                class="btn btn-light mr-2"
+                                v-on:click="decreaseOrder"
+                                :disabled="order === 1"
+                            >
+                                <
+                            </button>
+
+                            <div class="mr-2">
+                                {{ order }} / {{ fractal.maxOrder }}
+                            </div>
+
+                            <button
+                                class="btn btn-light mr-2"
+                                v-on:click="increaseOrder"
+                                :disabled="order === fractal.maxOrder"
+                            >
+                                >
+                            </button>
+
+                            <div class="mr-3 custom-control custom-switch">
+                                <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="customSwitch1"
+                                    v-model="play"
+                                />
+                                <label
+                                    class="custom-control-label"
+                                    for="customSwitch1"
+                                    >Play</label
+                                >
+                            </div>
+                        </div>
+
+                        <label class="mt-2 small">Axiom</label>
+                        <input
+                            type="string"
+                            class="form-control form-control-sm"
+                            v-model="fractal.axiom"
+                        />
+
+                        <label class="mt-3 small">Rules</label>
+                        <div
+                            class="row mb-1"
+                            v-for="(rule, i) in fractal.ruleList"
+                        >
+                            <div class="col-3">
+                                <input
+                                    type="string"
+                                    class="form-control form-control-sm"
+                                    v-model="rule.k"
+                                />
+                            </div>
+                            <div class="col-7">
+                                <input
+                                    type="string"
+                                    class="form-control form-control-sm"
+                                    v-model="rule.v"
+                                />
+                            </div>
+                            <div class="col-1">
+                                <button
+                                    @click="delRule(i)"
+                                    class="btn btn-light btn-sm"
+                                >
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div>
+                            <button
+                                @click="addRule"
+                                class="btn btn-light btn-sm"
+                            >
+                                + Rule
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <label class="mt-2 small">Angle</label>
+                                <input
+                                    type="number"
+                                    class="form-control form-control-sm"
+                                    v-model="fractal.angle"
+                                />
+                            </div>
+                            <div class="col">
+                                <label class="mt-2 small">Start Angle</label>
+                                <input
+                                    type="number"
+                                    class="form-control form-control-sm"
+                                    v-model="fractal.startAngle"
+                                />
+                            </div>
+                            <div class="col">
+                                <label class="mt-2 small">Max Order</label>
+                                <input
+                                    type="number"
+                                    class="form-control form-control-sm"
+                                    v-model="fractal.maxOrder"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="form-check form-check-sm mt-2 mb-3">
+                            <input
+                                id="flip"
+                                type="checkbox"
+                                class="form-check-input form-check-sm"
+                                v-model="fractal.flipStartAngleOnOddOrder"
+                            />
+                            <label
+                                for="flip"
+                                class="form-check-label small"
+                                style="margin-top: 2px"
+                                >Flip Start Angle on Odd Order</label
+                            >
+                        </div>
+
+                        <button
+                            @click="redraw"
+                            class="btn btn-light btn-block mt-2"
+                        >
+                            Redraw
+                        </button>
+
+                        <div class="mt-3 small text-monospace">
+                            <div style="white-space: pre">{{ fractalString }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col justify-content-center">
+                    <div class="mx-auto">
+                        <svg
+                            :viewBox="viewBox"
+                            :width="imageWidth"
+                            :height="imageHeight"
+                        >
+                            <path
+                                v-for="s in lines"
+                                :d="s.d"
+                                :stroke="s.stroke"
+                                :stroke-width="s.strokeWidth"
+                            ></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const fractalList = [
+        {
+            name: 'Sierpinsky Triangle',
+            axiom: 'AF',
+            rules: { A: 'BF-AF-B', B: 'AF+BF+A' },
+            angle: 60,
+            flipStartAngleOnOddOrder: true,
+            startAngle: 180,
+            maxOrder: 8,
+        },
+        {
+            name: 'Sierpinsky Carpet',
+            axiom: 'F',
+            rules: { F: '<F+F-F-F-G+F+F+F-F', G: 'GGG' },
+            angle: 90,
+            maxOrder: 4,
+        },
+        {
+            name: 'Sierpinsky Square',
+            axiom: 'X--F--X--F',
+            rules: { X: '+Y-F-Y+', Y: '-X+F+X-' },
+            angle: 45,
+            maxOrder: 13,
+        },
+        {
+            name: 'Shrub 1',
+            axiom: 'X',
+            rules: { X: 'F[>8+X][>8-X]FX', F: 'FF' },
+            angle: 14,
+            startAngle: 270,
+            maxOrder: 8,
+        },
+        {
+            name: 'Shrub 2',
+            axiom: 'X',
+            rules: { X: 'F-[[>6X]+X]+F[>6+FX]', F: 'FF' },
+            angle: 16,
+            startAngle: 260,
+            maxOrder: 8,
+        },
+        {
+            name: 'Shrub 3',
+            axiom: 'F',
+            rules: { F: 'F[>5+F]F[>5-F][>>F]' },
+            angle: 18,
+            startAngle: 270,
+            maxOrder: 5,
+        },
+        {
+            name: 'Shrub 4',
+            axiom: '---X',
+            rules: { X: 'F[-X][X]F[-X]+FX', F: 'FF' },
+            angle: 25,
+            startAngle: 0,
+            maxOrder: 6,
+        },
+        {
+            name: 'Shrub 5',
+            axiom: '+++FX',
+            rules: { X: '@[>4-FY]+FX', Y: 'FX+FY-FX' },
+            angle: 20,
+            startAngle: 185,
+            maxOrder: 10,
+        },
+        {
+            name: 'Y Tree',
+            axiom: 'FX',
+            rules: { X: '@[+FX][-FX]' },
+            angle: 45,
+            startAngle: 270,
+            maxOrder: 10,
+        },
+        {
+            name: 'Moore fractal',
+            axiom: 'X',
+            rules: {
+                X: '<5FX+FX+FXFYFX+FXFY-FY-FY-',
+                Y: '5+FX+FX+FXFY-FYFXFY-FY-FY',
+                F: '',
+            },
+            angle: 90,
+            flipStartAngleOnOddOrder: true,
+            maxOrder: 4,
+        },
+        {
+            name: 'Rings',
+            axiom: 'F-F-F-F',
+            rules: { F: 'FF-F-F-F-F-F+F' },
+            angle: 90,
+            maxOrder: 4,
+        },
+        {
+            name: 'Penrose Tile',
+            axiom: '[N]++[N]++[N]++[N]++[N]',
+            rules: {
+                M: 'OF++PF----NF[-OF----MF]++',
+                N: '+OF--PF[---MF--NF]+',
+                O: '-MF++NF[+++OF++PF]-',
+                P: '--OF++++MF[+PF++++NF]--NF',
+                F: '',
+            },
+            angle: 36,
+            maxOrder: 6,
+        },
+        {
+            name: 'Gosper Curve',
+            axiom: 'XF',
+            rules: { X: 'X+YF++YF-FX--FXFX-YF+', Y: '-FX+YFYF++YF+FX--FX-Y' },
+            angle: 60,
+            maxOrder: 5,
+        },
+        {
+            name: 'Hilbert Curve',
+            axiom: 'X',
+            rules: { X: '-YF+XFX+FY-', Y: '+XF-YFY-FX+' },
+            angle: 90,
+            maxOrder: 7,
+        },
+        {
+            name: 'Koch Curve',
+            axiom: 'F+F+F+F',
+            rules: { F: 'F+F-F-FF+F+F-F' },
+            angle: 90,
+            maxOrder: 3,
+        },
+        {
+            name: 'Koch',
+            axiom: 'F++F++F',
+            rules: { F: 'F-F++F-F' },
+            angle: 60,
+            maxOrder: 5,
+        },
+    ]
+
+    function replace (sourceStr, replacement) {
+        let result = ''
+        for (let c of sourceStr) {
+            if (c in replacement) {
+                result += replacement[c]
+            } else {
+                result += c
+            }
+        }
+        return result
+    }
+
+    new Vue({
+        el: '#app',
+        components: {
+            menuBar: _.isUndefined(menuBarComponent)
+                ? { template: '<div></div>' }
+                : menuBarComponent,
+        },
+        data: {
+            imageWidth: 500,
+            imageHeight: 500,
+            viewBox: '0 0 500 500',
+            title: 'Fractal Editor',
+            lines: [],
+            order: 1,
+            fractal: {},
+            names: [],
+            name: '',
+            play: true,
+            fractalString: '',
+        },
+        mounted () {
+            setInterval(this.frame, 1500)
+            this.names = _.map(fractalList, 'name')
+            this.name = this.names[0]
+            if (this.play) {
+                this.name = _.sample(this.names)
+            }
+            this.resize()
+            this.chooseNewFractal()
+            window.addEventListener('resize', this.resize)
+        },
+        methods: {
+            updateLineD (line) {
+                line.d = `M ${line.x1} ${line.y1} L ${line.x2} ${line.y2}`
+            },
+            resize () {
+                let width =
+                    window.innerWidth -
+                    this.$refs.panel.getBoundingClientRect().width
+                let imageWidth = width - 60
+                let imageHeight = window.innerHeight - 80
+
+                let minX = 1e5
+                let maxX = -1e5
+                let minY = 1e5
+                let maxY = -1e5
+                for (let line of this.lines) {
+                    for (let x of [line.x1, line.x2]) {
+                        if (x < minX) {
+                            minX = x
+                        }
+                        if (x > maxX) {
+                            maxX = x
+                        }
+                    }
+                    for (let y of [line.y1, line.y2]) {
+                        if (y < minY) {
+                            minY = y
+                        }
+                        if (y > maxY) {
+                            maxY = y
+                        }
+                    }
+                }
+
+                let drawWidth = maxX - minX
+                let drawHeight = maxY - minY
+                let cx = drawWidth / 2 + minX
+                let cy = drawHeight / 2 + minY
+
+                let padding = 5
+                let newDrawWidth = imageWidth - padding * 2
+                let newDrawHeight = imageHeight - padding * 2
+
+                let rWidth = newDrawWidth / drawWidth
+                let rHeight = newDrawHeight / drawHeight
+                let ratio = Math.min(rWidth, rHeight)
+
+                let cxNew = imageWidth / 2
+                let cyNew = imageHeight / 2
+
+                for (let line of this.lines) {
+                    line.x1 = ratio * (line.x1 - cx) + cxNew
+                    line.y1 = ratio * (line.y1 - cy) + cyNew
+                    line.x2 = ratio * (line.x2 - cx) + cxNew
+                    line.y2 = ratio * (line.y2 - cy) + cyNew
+                    this.updateLineD(line)
+                }
+
+                this.cx = cxNew
+                this.cy = cyNew
+
+                this.imageWidth = imageWidth
+                this.imageHeight = imageHeight
+
+                this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
+            },
+            clickFractal (name) {
+                this.play = false
+                this.chooseNewFractal(name)
+            },
+            chooseNewFractal (name) {
+                if (name) {
+                    this.name = name
+                }
+                this.title = `Fractal Editor::${this.name}`
+                window.document.title = `SVGArt::${this.title}`
+                this.fractal = _.cloneDeep(
+                    _.find(fractalList, { name: this.name })
+                )
+                this.fractal.ruleList = []
+                for (let [k, v] of _.entries(this.fractal.rules)) {
+                    this.fractal.ruleList.push({ k, v })
+                }
+                if (this.order > this.fractal.maxOrder) {
+                    this.order = this.fractal.maxOrder
+                }
+                this.redraw()
+            },
+            increaseOrder () {
+                this.order += 1
+                if (this.order > this.fractal.maxOrder) {
+                    this.order = this.fractal.maxOrder
+                }
+                this.redraw()
+            },
+            decreaseOrder () {
+                this.order -= 1
+                if (this.order < 1) {
+                    this.order = 1
+                }
+                this.redraw()
+            },
+            addRule () {
+                this.fractal.ruleList.push({ k: '', v: '' })
+                this.redraw()
+            },
+            delRule (i) {
+                this.fractal.ruleList.splice(i, 1)
+                this.redraw()
+            },
+            redraw () {
+                let fractal = _.cloneDeep(this.fractal)
+                for (let k of ['angle', 'startAngle', 'maxOrder']) {
+                    if (k in fractal) {
+                        fractal[k] = Number(fractal[k])
+                    }
+                }
+                fractal.rules = {}
+                for (let rule of fractal.ruleList) {
+                    if (rule.k) {
+                        fractal.rules[rule.k] = rule.v
+                    }
+                }
+                delete fractal.ruleList
+                this.fractalString = JSON.stringify(fractal, null, 2)
+
+                let s = fractal.axiom
+                for (let i in _.range(this.order)) {
+                    s = replace(s, fractal.rules)
+                }
+
+                let angle = 90
+                if ('startAngle' in fractal) {
+                    angle = fractal.startAngle
+                }
+                if (fractal.flipStartAngleOnOddOrder) {
+                    if (this.order % 2 === 1) {
+                        angle += 180
+                    }
+                }
+                let strokeWidth = Math.max(
+                    1,
+                    8 - 8 * (this.order / this.fractal.maxOrder)
+                )
+                let stroke = '#333'
+                let cursor = { x: this.cx, y: this.cy, angle, step: 1 }
+
+                let lines = []
+                let stack = []
+                for (let c of s) {
+                    if (c === 'F' || c === 'G') {
+                        let x1 = cursor.x
+                        let y1 = cursor.y
+                        let phi = (cursor.angle / 360) * 2 * Math.PI
+                        let x2 = x1 + cursor.step * Math.cos(phi)
+                        let y2 = y1 + cursor.step * Math.sin(phi)
+                        if (c === 'F') {
+                            let line = { x1, y1, x2, y2, stroke, strokeWidth }
+                            this.updateLineD(line)
+                            lines.push(line)
+                        }
+                        cursor.x = x2
+                        cursor.y = y2
+                    } else if (c === '@') {
+                        cursor.step = cursor.step * 0.6
+                    } else if (c === '+') {
+                        cursor.angle += fractal.angle
+                    } else if (c === '-') {
+                        cursor.angle -= fractal.angle
+                    } else if (c === '[') {
+                        stack.push(_.cloneDeep(cursor))
+                    } else if (c === ']') {
+                        cursor = stack.pop()
+                    }
+                }
+                this.lines = lines
+                this.resize()
+            },
+            frame () {
+                if (!this.play) {
+                    return
+                }
+                if (this.wait) {
+                    this.wait -= 1
+                    return
+                }
+                if (this.order < this.fractal.maxOrder) {
+                    this.order += 1
+                    this.redraw()
+                    if (this.order === this.fractal.maxOrder) {
+                        this.wait = 2
+                    }
+                    return
+                }
+                this.order = 1
+                this.chooseNewFractal(_.sample(this.names))
+            },
+        },
+    })
+</script>
