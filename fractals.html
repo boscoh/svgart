@@ -25,6 +25,8 @@
     integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
     crossorigin="anonymous"
   ></script>
+  <!-- font awesome icons -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- Lodash -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
   <!-- Vue -->
@@ -43,11 +45,11 @@
   <div id="app">
     <menu-bar></menu-bar>
 
-    <div class="d-flex d-md-none float-left pt-3 pl-3">
+    <div class="d-flex d-lg-none float-left pt-3 pl-3">
       <h5 class="text-muted">{{ title }}</h5>
     </div>
 
-    <div class="d-none d-md-flex mt-2 justify-content-center ">
+    <div class="d-none d-lg-flex mt-2 justify-content-center">
       <h3 class="text-muted">{{ title }}</h3>
     </div>
 
@@ -93,15 +95,14 @@
           >
         </button>
 
-        <div class="ml-2 custom-control custom-switch">
-          <input
-            type="checkbox"
-            class="custom-control-input"
-            id="customSwitch1"
-            v-model="play"
-          />
-          <label class="custom-control-label" for="customSwitch1">Play</label>
-        </div>
+        <button
+                class="btn btn-light ml-2"
+                v-on:click="clickPlay"
+        >
+          <i v-if="!play" class="fa fa-play"></i>
+          <i v-if="play" class="fa fa-pause"></i>
+        </button>
+
       </div>
 
       <svg :viewBox="viewBox" :width="imageWidth" :height="imageHeight">
@@ -296,6 +297,9 @@
       window.addEventListener('resize', this.resize)
     },
     methods: {
+      clickPlay() {
+        this.play = !this.play
+      },
       updateLineD (line) {
         line.d = `M ${line.x1} ${line.y1} L ${line.x2} ${line.y2}`
       },
