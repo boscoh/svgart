@@ -1,190 +1,195 @@
 <head>
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
-  />
-  <!-- Bootstrap -->
-  <link
-    rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-    crossorigin="anonymous"
-  />
-  <script
-    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-    crossorigin="anonymous"
-  ></script>
-  <!-- Lodash -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.min.js"></script>
-  <!-- Vue -->
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <!-- VueSlider -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/theme/antd.css"
-  />
-  <script src="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/dist/vue-slider-component.umd.min.js"></script>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <!-- avoid text rendering issues on various platforms -->
+    <meta charset="utf-8" />
 
-  <script src="menu.js"></script>
+    <!-- prevent auto-zooming on mobile browsers -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap for default styles and utility CSS classes -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+        crossorigin="anonymous"
+    />
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"
+    ></script>
+
+    <!-- Lodash -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.min.js"></script>
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- VueSlider -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/theme/antd.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/dist/vue-slider-component.umd.min.js"></script>
+
+    <script src="menu.js"></script>
 </head>
 
 <body>
-  <div id="app">
-    <menu-bar></menu-bar>
+    <div id="app">
+        <menu-bar></menu-bar>
 
-    <div class="d-flex d-lg-none float-left pt-3 pl-3">
-      <h5 class="text-muted">{{ title }}</h5>
-    </div>
-
-    <div class="d-none d-lg-flex mt-2 justify-content-center">
-      <h3 class="text-muted">{{ title }}</h3>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="text-center text-muted">
-      <svg
-        ref="svg"
-        :viewBox="viewBox"
-        :width="imageWidth"
-        :height="imageHeight"
-      >
-        <g v-for="t in squares" :transform="t.transform">
-          <path
-            :d="t.d"
-            :stroke="t.stroke"
-            :stroke-width="t.strokeWidth"
-            :fill="t.fill"
-          ></path>
-        </g>
-      </svg>
-
-      <div
-        class="mt-3 row align-items-center small px-2"
-        style="margin: 0 auto; max-width: 480px"
-      >
-        <div class="col">
-          <vue-slider
-            tooltip="none"
-            v-model="density"
-            :min="1"
-            :max="maxDensity"
-          ></vue-slider>
+        <div class="d-flex d-lg-none float-left pt-3 ps-3">
+            <h5 class="text-muted">{{ title }}</h5>
         </div>
-        <div>density</div>
-      </div>
+
+        <div class="d-none d-lg-flex mt-2 justify-content-center">
+            <h3 class="text-muted">{{ title }}</h3>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="text-center text-muted">
+            <svg
+                ref="svg"
+                :viewBox="viewBox"
+                :width="imageWidth"
+                :height="imageHeight"
+            >
+                <g v-for="t in squares" :transform="t.transform">
+                    <path
+                        :d="t.d"
+                        :stroke="t.stroke"
+                        :stroke-width="t.strokeWidth"
+                        :fill="t.fill"
+                    ></path>
+                </g>
+            </svg>
+
+            <div
+                class="mt-3 row align-items-center small px-2"
+                style="margin: 0 auto; max-width: 480px"
+            >
+                <div class="col">
+                    <vue-slider
+                        tooltip="none"
+                        v-model="density"
+                        :min="1"
+                        :max="maxDensity"
+                    ></vue-slider>
+                </div>
+                <div class="col">density</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    function boolInt (b) {
-      return Boolean(b) ? 1 : 0
-    }
-
-    new Vue({
-      el: '#app',
-      components: {
-        vueSlider: window['vue-slider-component'],
-        menuBar:
-          typeof menuBarComponent == 'undefined'
-            ? { template: '<div></div>' }
-            : menuBarComponent
-      },
-      data: {
-        imageWidth: 500,
-        imageHeight: 500,
-        viewBox: '0 0 500 500',
-        title: 'Arcs',
-        squares: [],
-        tilesByCoord: {},
-        padding: 10,
-        tileSize: 25,
-        density: 20,
-        maxDensity: 100
-      },
-      mounted () {
-        window.document.title = `SVGArt::${this.title}`
-        this.resize()
-        this.reset()
-        setInterval(this.frame, 100)
-        window.addEventListener('resize', this.resize)
-      },
-      methods: {
-        resize () {
-          let width = window.innerWidth - 40
-          this.nTileCol = Math.floor(width / this.tileSize)
-          this.imageWidth = this.nTileCol * this.tileSize + 2 * this.padding
-
-          let height = window.innerHeight - 170
-          this.nTileRow = Math.floor(height / this.tileSize)
-          this.imageHeight = this.nTileRow * this.tileSize + 2 * this.padding
-
-          this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
-
-          this.reset()
-        },
-
-        makeTile (i, j) {
-          let tile = { i, j, stroke: '#333', strokeWidth: 4, fill: `none` }
-          this.resetTile(tile)
-          return tile
-        },
-
-        resetTile (tile) {
-          const x = tile.i * this.tileSize + this.padding
-          const y = tile.j * this.tileSize + this.padding
-
-          const r = this.tileSize / 2
-          const n = _.random(0, 3)
-          const twos = Math.floor(n / 2)
-          const ones = n % 2
-
-          let xStart = x + r * boolInt(twos !== ones)
-          let yStart = y + r + r * twos - r * ones
-          let xEnd = x + r + r * boolInt(twos !== ones)
-          let yEnd = y + r * boolInt(ones) + r * boolInt(twos)
-
-          let sweepFlag = twos
-
-          tile.d = `M ${xStart} ${yStart} A ${r} ${r} 0 1 ${sweepFlag} ${xEnd} ${yEnd}`
-        },
-
-        reset () {
-          this.squares = []
-          this.tilesByCoord = {}
-          for (let i = 0; i < this.nTileCol; i += 1) {
-            for (let j = 0; j < this.nTileRow; j += 1) {
-              const key = String([i, j])
-              this.tilesByCoord[key] = this.makeTile(i, j)
-              this.squares.push(this.tilesByCoord[key])
-            }
-          }
-          this.frame()
-        },
-
-        frame () {
-          const p = 1 / (this.maxDensity - this.density + 1)
-          for (let i = 0; i < this.nTileCol; i += 1) {
-            for (let j = 0; j < this.nTileRow; j += 1) {
-              let tile = this.tilesByCoord[[i, j]]
-              if (_.random(true) < p) {
-                this.resetTile(tile)
-              }
-            }
-          }
+    <script>
+        function boolInt (b) {
+            return Boolean(b) ? 1 : 0
         }
-      }
-    })
-  </script>
+
+        new Vue({
+            el: '#app',
+            components: {
+                vueSlider: window['vue-slider-component'],
+                menuBar:
+                    typeof menuBarComponent == 'undefined'
+                        ? { template: '<div></div>' }
+                        : menuBarComponent,
+            },
+            data: {
+                imageWidth: 500,
+                imageHeight: 500,
+                viewBox: '0 0 500 500',
+                title: 'Arcs',
+                squares: [],
+                tilesByCoord: {},
+                padding: 10,
+                tileSize: 25,
+                density: 20,
+                maxDensity: 100,
+            },
+            mounted () {
+                window.document.title = `SVGArt::${this.title}`
+                this.resize()
+                this.reset()
+                setInterval(this.frame, 100)
+                window.addEventListener('resize', this.resize)
+            },
+            methods: {
+                resize () {
+                    let width = window.innerWidth - 40
+                    this.nTileCol = Math.floor(width / this.tileSize)
+                    this.imageWidth =
+                        this.nTileCol * this.tileSize + 2 * this.padding
+
+                    let height = window.innerHeight - 170
+                    this.nTileRow = Math.floor(height / this.tileSize)
+                    this.imageHeight =
+                        this.nTileRow * this.tileSize + 2 * this.padding
+
+                    this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
+
+                    this.reset()
+                },
+
+                makeTile (i, j) {
+                    let tile = {
+                        i,
+                        j,
+                        stroke: '#333',
+                        strokeWidth: 4,
+                        fill: `none`,
+                    }
+                    this.resetTile(tile)
+                    return tile
+                },
+
+                resetTile (tile) {
+                    const x = tile.i * this.tileSize + this.padding
+                    const y = tile.j * this.tileSize + this.padding
+
+                    const r = this.tileSize / 2
+                    const n = _.random(0, 3)
+                    const twos = Math.floor(n / 2)
+                    const ones = n % 2
+
+                    let xStart = x + r * boolInt(twos !== ones)
+                    let yStart = y + r + r * twos - r * ones
+                    let xEnd = x + r + r * boolInt(twos !== ones)
+                    let yEnd = y + r * boolInt(ones) + r * boolInt(twos)
+
+                    let sweepFlag = twos
+
+                    tile.d = `M ${xStart} ${yStart} A ${r} ${r} 0 1 ${sweepFlag} ${xEnd} ${yEnd}`
+                },
+
+                reset () {
+                    this.squares = []
+                    this.tilesByCoord = {}
+                    for (let i = 0; i < this.nTileCol; i += 1) {
+                        for (let j = 0; j < this.nTileRow; j += 1) {
+                            const key = String([i, j])
+                            this.tilesByCoord[key] = this.makeTile(i, j)
+                            this.squares.push(this.tilesByCoord[key])
+                        }
+                    }
+                    this.frame()
+                },
+
+                frame () {
+                    const p = 1 / (this.maxDensity - this.density + 1)
+                    for (let i = 0; i < this.nTileCol; i += 1) {
+                        for (let j = 0; j < this.nTileRow; j += 1) {
+                            let tile = this.tilesByCoord[[i, j]]
+                            if (_.random(true) < p) {
+                                this.resetTile(tile)
+                            }
+                        }
+                    }
+                },
+            },
+        })
+    </script>
 </body>

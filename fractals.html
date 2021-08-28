@@ -1,471 +1,469 @@
 <head>
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
-  />
-  <!-- Bootstrap -->
-  <link
-    rel="stylesheet"
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-    crossorigin="anonymous"
-  />
-  <script
-    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-    crossorigin="anonymous"
-  ></script>
-  <script
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-    crossorigin="anonymous"
-  ></script>
-  <!-- font awesome icons -->
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!-- Lodash -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
-  <!-- Vue -->
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <!-- avoid text rendering issues on various platforms -->
+    <meta charset="utf-8" />
 
-  <script src="menu.js"></script>
+    <!-- prevent auto-zooming on mobile browsers -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <style>
-    button {
-      touch-action: manipulation;
-    }
-  </style>
+    <!-- Bootstrap for default styles and utility CSS classes -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+        crossorigin="anonymous"
+    />
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"
+    ></script>
+    <!-- font awesome icons -->
+    <link
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        rel="stylesheet"
+    />
+    <!-- Lodash -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script>
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="menu.js"></script>
+
+    <style>
+        button {
+            touch-action: manipulation;
+        }
+    </style>
 </head>
 
 <body>
-  <div id="app">
-    <menu-bar></menu-bar>
+    <div id="app">
+        <menu-bar></menu-bar>
 
-    <div class="d-flex d-lg-none float-left pt-3 pl-3">
-      <h5 class="text-muted">{{ title }}</h5>
-    </div>
-
-    <div class="d-none d-lg-flex mt-2 justify-content-center">
-      <h3 class="text-muted">{{ title }}</h3>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="text-center text-muted">
-      <div class="mb-2 form-inline justify-content-center">
-        <button
-          class="text-secondary btn btn-light dropdown-toggle mr-2"
-          type="button"
-          id="dropdownMenuButton"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          More
-        </button>
-        <div class="dropdown-menu">
-          <button
-            v-for="c in names"
-            class="text-secondary dropdown-item"
-            v-on:click="clickFractal(c)"
-          >
-            {{c}}
-          </button>
+        <div class="d-flex d-lg-none float-left pt-3 ps-3">
+            <h5 class="text-muted">{{ title }}</h5>
         </div>
 
-        <button
-          class="btn btn-light mr-2"
-          v-on:click="decreaseOrder"
-          :disabled="order === 1"
-        >
-          <
-        </button>
+        <div class="d-none d-lg-flex mt-2 justify-content-center">
+            <h3 class="text-muted">{{ title }}</h3>
+        </div>
 
-        Order {{ order }} / {{ maxOrder }}
+        <div class="clearfix"></div>
 
-        <button
-          class="btn btn-light ml-2"
-          v-on:click="increaseOrder"
-          :disabled="order === maxOrder"
-        >
-          >
-        </button>
+        <div class="text-center text-muted">
+            <div class="mb-2 form-inline justify-content-center">
+                <button
+                    class="text-secondary btn btn-light dropdown-toggle me-2"
+                    type="button"
+                    id="dropdownMenuButton"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    <button
+                        v-for="c in names"
+                        class="text-secondary dropdown-item"
+                        v-on:click="clickFractal(c)"
+                    >
+                        {{c}}
+                    </button>
+                </div>
 
-        <button
-                class="btn btn-light ml-2"
-                v-on:click="clickPlay"
-        >
-          <i v-if="!play" class="fa fa-play"></i>
-          <i v-if="play" class="fa fa-pause"></i>
-        </button>
+                <button
+                    class="btn btn-light me-2"
+                    v-on:click="decreaseOrder"
+                    :disabled="order === 1"
+                >
+                    <
+                </button>
 
-      </div>
+                Order {{ order }} / {{ maxOrder }}
 
-      <svg :viewBox="viewBox" :width="imageWidth" :height="imageHeight">
-        <path
-          v-for="s in lines"
-          :d="s.d"
-          :stroke="s.stroke"
-          :stroke-width="s.strokeWidth"
-        ></path>
-      </svg>
+                <button
+                    class="btn btn-light ms-2"
+                    v-on:click="increaseOrder"
+                    :disabled="order === maxOrder"
+                >
+                    >
+                </button>
+
+                <button class="btn btn-light ms-2" v-on:click="clickPlay">
+                    <i v-if="!play" class="fa fa-play"></i>
+                    <i v-if="play" class="fa fa-pause"></i>
+                </button>
+            </div>
+
+            <svg :viewBox="viewBox" :width="imageWidth" :height="imageHeight">
+                <path
+                    v-for="s in lines"
+                    :d="s.d"
+                    :stroke="s.stroke"
+                    :stroke-width="s.strokeWidth"
+                ></path>
+            </svg>
+        </div>
     </div>
-  </div>
 </body>
 
 <script>
-  const fractalList = [
-    {
-      name: 'Sierpinsky Triangle',
-      axiom: 'AF',
-      rules: { A: 'BF-AF-B', B: 'AF+BF+A' },
-      angle: 60,
-      flipStartAngleOnOddOrder: true,
-      startAngle: 180,
-      maxOrder: 8,
-    },
-    {
-      name: 'Sierpinsky Carpet',
-      axiom: 'F',
-      rules: { F: '<F+F-F-F-G+F+F+F-F', G: 'GGG' },
-      angle: 90,
-      maxOrder: 4,
-    },
-    {
-      name: 'Sierpinsky Square',
-      axiom: 'X--F--X--F',
-      rules: { X: '+Y-F-Y+', Y: '-X+F+X-' },
-      angle: 45,
-      maxOrder: 13,
-    },
-    {
-      name: 'Shrub 1',
-      axiom: 'X',
-      rules: { X: 'F[>8+X][>8-X]FX', F: 'FF' },
-      angle: 14,
-      startAngle: 270,
-      maxOrder: 8,
-    },
-    {
-      name: 'Shrub 2',
-      axiom: 'X',
-      rules: { X: 'F-[[>6X]+X]+F[>6+FX]', F: 'FF' },
-      angle: 16,
-      startAngle: 260,
-      maxOrder: 8,
-    },
-    {
-      name: 'Shrub 3',
-      axiom: 'F',
-      rules: { F: 'F[>5+F]F[>5-F][>>F]' },
-      angle: 18,
-      startAngle: 270,
-      maxOrder: 5,
-    },
-    {
-      name: 'Shrub 4',
-      axiom: '---X',
-      rules: { X: 'F[-X][X]F[-X]+FX', F: 'FF' },
-      angle: 25,
-      startAngle: 0,
-      maxOrder: 6,
-    },
-    {
-      name: 'Shrub 5',
-      axiom: '+++FX',
-      rules: { X: '@[>4-FY]+FX', Y: 'FX+FY-FX' },
-      angle: 20,
-      startAngle: 185,
-      maxOrder: 10,
-    },
-    {
-      name: 'Y Tree',
-      axiom: 'FX',
-      rules: { X: '@[+FX][-FX]' },
-      angle: 45,
-      startAngle: 270,
-      maxOrder: 10,
-    },
-    {
-      name: 'Moore fractal',
-      axiom: 'X',
-      rules: {
-        X: '<5FX+FX+FXFYFX+FXFY-FY-FY-',
-        Y: '5+FX+FX+FXFY-FYFXFY-FY-FY',
-        F: '',
-      },
-      angle: 90,
-      flipStartAngleOnOddOrder: true,
-      maxOrder: 4,
-    },
-    {
-      name: 'Rings',
-      axiom: 'F-F-F-F',
-      rules: { F: 'FF-F-F-F-F-F+F' },
-      angle: 90,
-      maxOrder: 4,
-    },
-    {
-      name: 'Penrose Tile',
-      axiom: '[N]++[N]++[N]++[N]++[N]',
-      rules: {
-        M: 'OF++PF----NF[-OF----MF]++',
-        N: '+OF--PF[---MF--NF]+',
-        O: '-MF++NF[+++OF++PF]-',
-        P: '--OF++++MF[+PF++++NF]--NF',
-        F: '',
-      },
-      angle: 36,
-      maxOrder: 6,
-    },
-    {
-      name: 'Gosper Curve',
-      axiom: 'XF',
-      rules: { X: 'X+YF++YF-FX--FXFX-YF+', Y: '-FX+YFYF++YF+FX--FX-Y' },
-      angle: 60,
-      maxOrder: 5,
-    },
-    {
-      name: 'Hilbert Curve',
-      axiom: 'X',
-      rules: { X: '-YF+XFX+FY-', Y: '+XF-YFY-FX+' },
-      angle: 90,
-      maxOrder: 7,
-    },
-    {
-      name: 'Koch Curve',
-      axiom: 'F+F+F+F',
-      rules: { F: 'F+F-F-FF+F+F-F' },
-      angle: 90,
-      maxOrder: 3,
-    },
-    {
-      name: 'Koch',
-      axiom: 'F++F++F',
-      rules: { F: 'F-F++F-F' },
-      angle: 60,
-      maxOrder: 5,
-    },
-  ]
+    const fractalList = [
+        {
+            name: 'Sierpinsky Triangle',
+            axiom: 'AF',
+            rules: { A: 'BF-AF-B', B: 'AF+BF+A' },
+            angle: 60,
+            flipStartAngleOnOddOrder: true,
+            startAngle: 180,
+            maxOrder: 8,
+        },
+        {
+            name: 'Sierpinsky Carpet',
+            axiom: 'F',
+            rules: { F: '<F+F-F-F-G+F+F+F-F', G: 'GGG' },
+            angle: 90,
+            maxOrder: 4,
+        },
+        {
+            name: 'Sierpinsky Square',
+            axiom: 'X--F--X--F',
+            rules: { X: '+Y-F-Y+', Y: '-X+F+X-' },
+            angle: 45,
+            maxOrder: 13,
+        },
+        {
+            name: 'Shrub 1',
+            axiom: 'X',
+            rules: { X: 'F[>8+X][>8-X]FX', F: 'FF' },
+            angle: 14,
+            startAngle: 270,
+            maxOrder: 8,
+        },
+        {
+            name: 'Shrub 2',
+            axiom: 'X',
+            rules: { X: 'F-[[>6X]+X]+F[>6+FX]', F: 'FF' },
+            angle: 16,
+            startAngle: 260,
+            maxOrder: 8,
+        },
+        {
+            name: 'Shrub 3',
+            axiom: 'F',
+            rules: { F: 'F[>5+F]F[>5-F][>>F]' },
+            angle: 18,
+            startAngle: 270,
+            maxOrder: 5,
+        },
+        {
+            name: 'Shrub 4',
+            axiom: '---X',
+            rules: { X: 'F[-X][X]F[-X]+FX', F: 'FF' },
+            angle: 25,
+            startAngle: 0,
+            maxOrder: 6,
+        },
+        {
+            name: 'Shrub 5',
+            axiom: '+++FX',
+            rules: { X: '@[>4-FY]+FX', Y: 'FX+FY-FX' },
+            angle: 20,
+            startAngle: 185,
+            maxOrder: 10,
+        },
+        {
+            name: 'Y Tree',
+            axiom: 'FX',
+            rules: { X: '@[+FX][-FX]' },
+            angle: 45,
+            startAngle: 270,
+            maxOrder: 10,
+        },
+        {
+            name: 'Moore fractal',
+            axiom: 'X',
+            rules: {
+                X: '<5FX+FX+FXFYFX+FXFY-FY-FY-',
+                Y: '5+FX+FX+FXFY-FYFXFY-FY-FY',
+                F: '',
+            },
+            angle: 90,
+            flipStartAngleOnOddOrder: true,
+            maxOrder: 4,
+        },
+        {
+            name: 'Rings',
+            axiom: 'F-F-F-F',
+            rules: { F: 'FF-F-F-F-F-F+F' },
+            angle: 90,
+            maxOrder: 4,
+        },
+        {
+            name: 'Penrose Tile',
+            axiom: '[N]++[N]++[N]++[N]++[N]',
+            rules: {
+                M: 'OF++PF----NF[-OF----MF]++',
+                N: '+OF--PF[---MF--NF]+',
+                O: '-MF++NF[+++OF++PF]-',
+                P: '--OF++++MF[+PF++++NF]--NF',
+                F: '',
+            },
+            angle: 36,
+            maxOrder: 6,
+        },
+        {
+            name: 'Gosper Curve',
+            axiom: 'XF',
+            rules: { X: 'X+YF++YF-FX--FXFX-YF+', Y: '-FX+YFYF++YF+FX--FX-Y' },
+            angle: 60,
+            maxOrder: 5,
+        },
+        {
+            name: 'Hilbert Curve',
+            axiom: 'X',
+            rules: { X: '-YF+XFX+FY-', Y: '+XF-YFY-FX+' },
+            angle: 90,
+            maxOrder: 7,
+        },
+        {
+            name: 'Koch Curve',
+            axiom: 'F+F+F+F',
+            rules: { F: 'F+F-F-FF+F+F-F' },
+            angle: 90,
+            maxOrder: 3,
+        },
+        {
+            name: 'Koch',
+            axiom: 'F++F++F',
+            rules: { F: 'F-F++F-F' },
+            angle: 60,
+            maxOrder: 5,
+        },
+    ]
 
-  function replace (sourceS, replacement) {
-    let result = ''
-    for (let c of sourceS) {
-      if (c in replacement) {
-        result += replacement[c]
-      } else {
-        result += c
-      }
+    function replace (sourceS, replacement) {
+        let result = ''
+        for (let c of sourceS) {
+            if (c in replacement) {
+                result += replacement[c]
+            } else {
+                result += c
+            }
+        }
+        return result
     }
-    return result
-  }
 
-  new Vue({
-    el: '#app',
-    components: {
-      menuBar: _.isUndefined(menuBarComponent)
-        ? { template: '<div></div>' }
-        : menuBarComponent
-    },
-    data: {
-      imageWidth: 500,
-      imageHeight: 500,
-      viewBox: '0 0 500 500',
-      title: 'Fractals',
-      lines: [],
-      order: 1,
-      maxOrder: 1,
-      names: [],
-      name: '',
-      play: true
-    },
-    mounted () {
-      window.document.title = `SVGArt::${this.title}`
-      setInterval(this.frame, 1500)
-      this.names = _.map(fractalList, 'name')
-      this.name = this.names[0]
-      if (this.play) {
-        this.name = _.sample(this.names)
-      }
-      this.order = 1
-      this.resize()
-      this.chooseNewFractal()
-      window.addEventListener('resize', this.resize)
-    },
-    methods: {
-      clickPlay() {
-        this.play = !this.play
-      },
-      updateLineD (line) {
-        line.d = `M ${line.x1} ${line.y1} L ${line.x2} ${line.y2}`
-      },
-      resize () {
-        let imageWidth = window.innerWidth - 60
-        let imageHeight = window.innerHeight - 160
-
-        let minX = 1e5
-        let maxX = -1e5
-        let minY = 1e5
-        let maxY = -1e5
-        for (let line of this.lines) {
-          for (let x of [line.x1, line.x2]) {
-            if (x < minX) {
-              minX = x
+    new Vue({
+        el: '#app',
+        components: {
+            menuBar: _.isUndefined(menuBarComponent)
+                ? { template: '<div></div>' }
+                : menuBarComponent,
+        },
+        data: {
+            imageWidth: 500,
+            imageHeight: 500,
+            viewBox: '0 0 500 500',
+            title: 'Fractals',
+            lines: [],
+            order: 1,
+            maxOrder: 1,
+            names: [],
+            name: '',
+            play: true,
+        },
+        mounted () {
+            window.document.title = `SVGArt::${this.title}`
+            setInterval(this.frame, 1500)
+            this.names = _.map(fractalList, 'name')
+            this.name = this.names[0]
+            if (this.play) {
+                this.name = _.sample(this.names)
             }
-            if (x > maxX) {
-              maxX = x
-            }
-          }
-          for (let y of [line.y1, line.y2]) {
-            if (y < minY) {
-              minY = y
-            }
-            if (y > maxY) {
-              maxY = y
-            }
-          }
-        }
+            this.order = 1
+            this.resize()
+            this.chooseNewFractal()
+            window.addEventListener('resize', this.resize)
+        },
+        methods: {
+            clickPlay () {
+                this.play = !this.play
+            },
+            updateLineD (line) {
+                line.d = `M ${line.x1} ${line.y1} L ${line.x2} ${line.y2}`
+            },
+            resize () {
+                let imageWidth = window.innerWidth - 60
+                let imageHeight = window.innerHeight - 160
 
-        let drawWidth = maxX - minX
-        let drawHeight = maxY - minY
-        let cx = drawWidth / 2 + minX
-        let cy = drawHeight / 2 + minY
+                let minX = 1e5
+                let maxX = -1e5
+                let minY = 1e5
+                let maxY = -1e5
+                for (let line of this.lines) {
+                    for (let x of [line.x1, line.x2]) {
+                        if (x < minX) {
+                            minX = x
+                        }
+                        if (x > maxX) {
+                            maxX = x
+                        }
+                    }
+                    for (let y of [line.y1, line.y2]) {
+                        if (y < minY) {
+                            minY = y
+                        }
+                        if (y > maxY) {
+                            maxY = y
+                        }
+                    }
+                }
 
-        let padding = 5
-        let newDrawWidth = imageWidth - padding * 2
-        let newDrawHeight = imageHeight - padding * 2
+                let drawWidth = maxX - minX
+                let drawHeight = maxY - minY
+                let cx = drawWidth / 2 + minX
+                let cy = drawHeight / 2 + minY
 
-        let rWidth = newDrawWidth / drawWidth
-        let rHeight = newDrawHeight / drawHeight
-        let ratio = Math.min(rWidth, rHeight)
+                let padding = 5
+                let newDrawWidth = imageWidth - padding * 2
+                let newDrawHeight = imageHeight - padding * 2
 
-        let cxNew = imageWidth / 2
-        let cyNew = imageHeight / 2
+                let rWidth = newDrawWidth / drawWidth
+                let rHeight = newDrawHeight / drawHeight
+                let ratio = Math.min(rWidth, rHeight)
 
-        for (let line of this.lines) {
-          line.x1 = ratio * (line.x1 - cx) + cxNew
-          line.y1 = ratio * (line.y1 - cy) + cyNew
-          line.x2 = ratio * (line.x2 - cx) + cxNew
-          line.y2 = ratio * (line.y2 - cy) + cyNew
-          this.updateLineD(line)
-        }
+                let cxNew = imageWidth / 2
+                let cyNew = imageHeight / 2
 
-        this.cx = cxNew
-        this.cy = cyNew
+                for (let line of this.lines) {
+                    line.x1 = ratio * (line.x1 - cx) + cxNew
+                    line.y1 = ratio * (line.y1 - cy) + cyNew
+                    line.x2 = ratio * (line.x2 - cx) + cxNew
+                    line.y2 = ratio * (line.y2 - cy) + cyNew
+                    this.updateLineD(line)
+                }
 
-        this.imageWidth = imageWidth
-        this.imageHeight = imageHeight
+                this.cx = cxNew
+                this.cy = cyNew
 
-        this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
-      },
-      clickFractal(choice) {
-        this.play = false
-        this.chooseNewFractal(choice)
-      },
-      chooseNewFractal (name) {
-        if (name) {
-          this.name = name
-        }
-        this.fractal = _.find(fractalList, {name: this.name})
-        this.maxOrder = this.fractal.maxOrder
-        if (this.order > this.maxOrder) {
-          this.order = this.maxOrder
-        }
-        this.redraw()
-      },
-      increaseOrder () {
-        this.order += 1
-        if (this.order > this.maxOrder) {
-          this.order = this.maxOrder
-        }
-        this.redraw()
-      },
-      decreaseOrder () {
-        this.order -= 1
-        if (this.order < 1) {
-          this.order = 1
-        }
-        this.redraw()
-      },
-      redraw () {
-        console.log(this.name, this.order)
+                this.imageWidth = imageWidth
+                this.imageHeight = imageHeight
 
-        this.title = `Fractal :: ${this.name}`
+                this.viewBox = `0 0 ${this.imageWidth} ${this.imageHeight}`
+            },
+            clickFractal (choice) {
+                this.play = false
+                this.chooseNewFractal(choice)
+            },
+            chooseNewFractal (name) {
+                if (name) {
+                    this.name = name
+                }
+                this.fractal = _.find(fractalList, { name: this.name })
+                this.maxOrder = this.fractal.maxOrder
+                if (this.order > this.maxOrder) {
+                    this.order = this.maxOrder
+                }
+                this.redraw()
+            },
+            increaseOrder () {
+                this.order += 1
+                if (this.order > this.maxOrder) {
+                    this.order = this.maxOrder
+                }
+                this.redraw()
+            },
+            decreaseOrder () {
+                this.order -= 1
+                if (this.order < 1) {
+                    this.order = 1
+                }
+                this.redraw()
+            },
+            redraw () {
+                console.log(this.name, this.order)
 
-        let fractal = this.fractal
+                this.title = `Fractal :: ${this.name}`
 
-        let s = fractal.axiom
-        for (let i in _.range(this.order)) {
-          s = replace(s, fractal.rules)
-        }
+                let fractal = this.fractal
 
-        let angle = 90
-        if ('startAngle' in fractal) {
-          angle = fractal.startAngle
-        }
-        if (fractal.flipStartAngleOnOddOrder) {
-          if (this.order % 2 === 1) {
-            angle += 180
-          }
-        }
-        let strokeWidth = Math.max(1, 8 - 8 * (this.order / this.maxOrder))
-        let stroke = '#333'
-        let cursor = { x: this.cx, y: this.cy, angle, step: 1 }
+                let s = fractal.axiom
+                for (let i in _.range(this.order)) {
+                    s = replace(s, fractal.rules)
+                }
 
-        let lines = []
-        let stack = []
-        for (let c of s) {
-          if ((c === 'F') || (c === 'G')) {
-            let x1 = cursor.x
-            let y1 = cursor.y
-            let phi = (cursor.angle / 360) * 2 * Math.PI
-            let x2 = x1 + cursor.step * Math.cos(phi)
-            let y2 = y1 + cursor.step * Math.sin(phi)
-            if (c === 'F') {
-              let line = {x1, y1, x2, y2, stroke, strokeWidth}
-              this.updateLineD(line)
-              lines.push(line)
-            }
-            cursor.x = x2
-            cursor.y = y2
-          } else if (c === '@') {
-            cursor.step = cursor.step * 0.6
-          } else if (c === '+') {
-            cursor.angle += fractal.angle
-          } else if (c === '-') {
-            cursor.angle -= fractal.angle
-          } else if (c === '[') {
-            stack.push(_.cloneDeep(cursor))
-          } else if (c === ']') {
-            cursor = stack.pop()
-          }
-        }
-        this.lines = lines
-        this.resize()
-      },
-      frame () {
-        if (!this.play) {
-          return
-        }
-        if (this.wait) {
-          this.wait -= 1
-          return
-        }
-        if (this.order < this.maxOrder) {
-          this.order += 1
-          this.redraw()
-          if (this.order === this.maxOrder) {
-            this.wait = 2
-          }
-          return
-        }
-        this.order = 1
-        this.chooseNewFractal(_.sample(this.names))
-      }
-    }
-  })
+                let angle = 90
+                if ('startAngle' in fractal) {
+                    angle = fractal.startAngle
+                }
+                if (fractal.flipStartAngleOnOddOrder) {
+                    if (this.order % 2 === 1) {
+                        angle += 180
+                    }
+                }
+                let strokeWidth = Math.max(
+                    1,
+                    8 - 8 * (this.order / this.maxOrder)
+                )
+                let stroke = '#333'
+                let cursor = { x: this.cx, y: this.cy, angle, step: 1 }
+
+                let lines = []
+                let stack = []
+                for (let c of s) {
+                    if (c === 'F' || c === 'G') {
+                        let x1 = cursor.x
+                        let y1 = cursor.y
+                        let phi = (cursor.angle / 360) * 2 * Math.PI
+                        let x2 = x1 + cursor.step * Math.cos(phi)
+                        let y2 = y1 + cursor.step * Math.sin(phi)
+                        if (c === 'F') {
+                            let line = { x1, y1, x2, y2, stroke, strokeWidth }
+                            this.updateLineD(line)
+                            lines.push(line)
+                        }
+                        cursor.x = x2
+                        cursor.y = y2
+                    } else if (c === '@') {
+                        cursor.step = cursor.step * 0.6
+                    } else if (c === '+') {
+                        cursor.angle += fractal.angle
+                    } else if (c === '-') {
+                        cursor.angle -= fractal.angle
+                    } else if (c === '[') {
+                        stack.push(_.cloneDeep(cursor))
+                    } else if (c === ']') {
+                        cursor = stack.pop()
+                    }
+                }
+                this.lines = lines
+                this.resize()
+            },
+            frame () {
+                if (!this.play) {
+                    return
+                }
+                if (this.wait) {
+                    this.wait -= 1
+                    return
+                }
+                if (this.order < this.maxOrder) {
+                    this.order += 1
+                    this.redraw()
+                    if (this.order === this.maxOrder) {
+                        this.wait = 2
+                    }
+                    return
+                }
+                this.order = 1
+                this.chooseNewFractal(_.sample(this.names))
+            },
+        },
+    })
 </script>

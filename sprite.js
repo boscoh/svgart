@@ -6,8 +6,8 @@
  * - .draw()
  */
 
-function registerWidgetForAnimation(widget) {
-    function loop() {
+function registerWidgetForAnimation (widget) {
+    function loop () {
         window.requestAnimationFrame(loop)
 
         if (window.animationWidgets.length === 0) {
@@ -48,7 +48,7 @@ function registerWidgetForAnimation(widget) {
  * for tying together animation loops
  */
 class Widget {
-    constructor(selector) {
+    constructor (selector) {
         this.selector = selector
         this.div = $(this.selector)
         this.divDom = this.div[0]
@@ -69,15 +69,15 @@ class Widget {
 
     // for the animation loop
 
-    registerAnimation() {
+    registerAnimation () {
         registerWidgetForAnimation(this)
     }
 
-    draw() {}
+    draw () {}
 
-    animate(elapsedTime) {} // eslint-disable-line
+    animate (elapsedTime) {} // eslint-disable-line
 
-    bindCallbacks(dom) {
+    bindCallbacks (dom) {
         let bind = (eventType, callback) => {
             dom.addEventListener(eventType, callback)
         }
@@ -96,29 +96,29 @@ class Widget {
         bind('gestureend', e => this.gestureend(e))
     }
 
-    resize() {
+    resize () {
         // override
     }
 
-    x() {
+    x () {
         let divPos = this.div.offset()
         return divPos.left
     }
 
-    y() {
+    y () {
         let divPos = this.div.offset()
         return divPos.top
     }
 
-    width() {
+    width () {
         return this.div.width()
     }
 
-    height() {
+    height () {
         return this.div.height()
     }
 
-    isInside(x, y) {
+    isInside (x, y) {
         return (
             x >= this.x() &&
             x <= this.x() + this.width() &&
@@ -127,7 +127,7 @@ class Widget {
         )
     }
 
-    calcPointerXY(event) {
+    calcPointerXY (event) {
         // calculation of div position by traversing DOM tree
         let top = 0
         let left = 0
@@ -161,12 +161,12 @@ class Widget {
         this.pointerY = this.eventY - top
     }
 
-    savePointerXY() {
+    savePointerXY () {
         this.savePointerX = this.pointerX
         this.savePointerY = this.pointerY
     }
 
-    mousedown(event) {
+    mousedown (event) {
         this.calcPointerXY(event)
 
         // event.preventDefault()
@@ -186,7 +186,7 @@ class Widget {
         this.mousePressed = true
     }
 
-    mousemove(event) {
+    mousemove (event) {
         this.calcPointerXY(event)
 
         // event.preventDefault()
@@ -220,7 +220,7 @@ class Widget {
         this.savePointerXY()
     }
 
-    mouseup(event) {
+    mouseup (event) {
         this.calcPointerXY(event)
 
         // event.preventDefault()
@@ -233,14 +233,14 @@ class Widget {
         this.mousePressed = false
     }
 
-    gesturestart(event) {
+    gesturestart (event) {
         // event.preventDefault()
         this.isGesture = true
         this.gestureRot = 0
         this.gestureScale = event.scale * event.scale
     }
 
-    gesturechange(event) {
+    gesturechange (event) {
         // event.preventDefault()
         this.gesturedrag(
             event.rotation - this.gestureRot,
@@ -251,13 +251,13 @@ class Widget {
         this.gestureScale = event.scale
     }
 
-    gestureend(event) {
+    gestureend (event) {
         event.preventDefault()
         this.isGesture = false
         this.mousePressed = false
     }
 
-    mousewheel(event) {
+    mousewheel (event) {
         // event.preventDefault()
 
         let wheel
@@ -273,17 +273,17 @@ class Widget {
 
     // override these functions
 
-    mousescroll(wheel) {} // eslint-disable-line
+    mousescroll (wheel) {} // eslint-disable-line
 
-    mouseclick(x, y) {} // eslint-disable-line
+    mouseclick (x, y) {} // eslint-disable-line
 
-    mousedoubleclick(x, y) {} // eslint-disable-line
+    mousedoubleclick (x, y) {} // eslint-disable-line
 
-    leftmousedrag(x0, y0, x1, y1) {} // eslint-disable-line
+    leftmousedrag (x0, y0, x1, y1) {} // eslint-disable-line
 
-    rightmousedrag(x0, y0, x1, y1) {} // eslint-disable-line
+    rightmousedrag (x0, y0, x1, y1) {} // eslint-disable-line
 
-    gesturedrag(rot, scale) {} // eslint-disable-line
+    gesturedrag (rot, scale) {} // eslint-disable-line
 }
 
 /**
@@ -294,7 +294,7 @@ class Widget {
  *   - creates methods that redirects mouse commands to that canvas
  */
 class CanvasWidget extends Widget {
-    constructor(selector) {
+    constructor (selector) {
         super(selector)
 
         this.canvas = $('<canvas>')
@@ -309,22 +309,22 @@ class CanvasWidget extends Widget {
         this.registerAnimation()
     }
 
-    resize() {
+    resize () {
         this.canvasDom.width = this.width()
         this.canvasDom.height = this.height()
     }
 
-    strokeRect(x, y, w, h, strokeStyle) {
+    strokeRect (x, y, w, h, strokeStyle) {
         this.drawContext.strokeStyle = strokeStyle
         this.drawContext.strokeRect(x, y, w, h)
     }
 
-    fillRect(x, y, w, h, fillStyle) {
+    fillRect (x, y, w, h, fillStyle) {
         this.drawContext.fillStyle = fillStyle
         this.drawContext.fillRect(x, y, w, h)
     }
 
-    line(x1, y1, x2, y2, lineWidth, color) {
+    line (x1, y1, x2, y2, lineWidth, color) {
         this.drawContext.moveTo(x1, y1)
         this.drawContext.lineTo(x2, y2)
         this.drawContext.lineWidth = lineWidth
@@ -332,7 +332,7 @@ class CanvasWidget extends Widget {
         this.drawContext.stroke()
     }
 
-    text(text, x, y, font, color, align) {
+    text (text, x, y, font, color, align) {
         this.drawContext.fillStyle = color
         this.drawContext.font = font
         this.drawContext.textAlign = align
@@ -340,16 +340,15 @@ class CanvasWidget extends Widget {
         this.drawContext.fillText(text, x, y)
     }
 
-    textWidth(text, font) {
+    textWidth (text, font) {
         this.drawContext.font = font
         this.drawContext.textAlign = 'center'
         return this.drawContext.measureText(text).width
     }
 }
 
-
 class Sprite {
-    constructor(options = null) {
+    constructor (options = null) {
         this.url = null
         this.width = 0
         this.height = 0
@@ -390,7 +389,7 @@ class Sprite {
         }
     }
 
-    asyncLoadSrc(src) {
+    asyncLoadSrc (src) {
         return new Promise(resolve => {
             console.log(`Loading ${src}`)
             this.src = src
@@ -413,7 +412,7 @@ class Sprite {
         })
     }
 
-    getFrame() {
+    getFrame () {
         let iFrame = this.iFrame
         if (!_.isNil(iFrame)) {
             return this.frames[iFrame]
@@ -422,7 +421,7 @@ class Sprite {
         }
     }
 
-    updateFrame() {
+    updateFrame () {
         this.iCounter += 1
         if (this.iCounter % this.nCounterPerFrame === 0) {
             let frame = this.frames[this.iFrame]
@@ -437,14 +436,14 @@ class Sprite {
         }
     }
 
-    animate(timeElapsed) {
+    animate (timeElapsed) {
         if (this.animateFn) {
             let key = this.animateVar
             this[key] = this.animateFn(timeElapsed)
         }
     }
 
-    render(context) {
+    render (context) {
         let frame
         let iFrame = this.iFrame
         if (_.isNil(iFrame) || this.frames.length === 0) {
@@ -495,4 +494,3 @@ class Sprite {
         }
     }
 }
-
